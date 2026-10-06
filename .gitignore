@@ -27,3 +27,6 @@ Homestead.yaml
 Thumbs.db
 
 .env.testing
+
+# Include the demo SQLite database despite database/.gitignore
+!database/database.sqlite
