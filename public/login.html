@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Refuelio Admin &mdash; Bangued&rsquo;s Gas Station Hub</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="/css/admin.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><text y='19' font-size='19'>&#128273;</text></svg>">
+</head>
+<body class="login-page">
+
+<main class="login-card">
+  <div class="login-brand">
+    <span class="login-logo" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="currentColor">
+        <path d="M6 2h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-.6v1.8a1 1 0 0 1-1 1H7.6a1 1 0 0 1-1-1V17H6a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z"/>
+        <path d="M7 5h3v4H7z" fill="#0f766e"/>
+        <path d="M12 5.4h2.2a2.2 2.2 0 0 1 2.2 2.2v3.2" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+        <path d="M16.4 9.6 18.4 11.6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+      </svg>
+    </span>
+    <div class="login-brand-text">
+      <h1>Refuelio</h1>
+      <p class="brand-sub">Bangued&rsquo;s Gas Station Hub</p>
+    </div>
+  </div>
+  <p class="sub">Sign in to manage stations and fuel prices.</p>
+
+  <div class="alert alert-error" id="login-error" role="alert" hidden></div>
+
+  <form id="login-form" novalidate>
+    <div class="field">
+      <label for="username">Username <span class="req">*</span></label>
+      <input type="text" id="username" name="username" autocomplete="username" required autofocus>
+    </div>
+    <div class="field">
+      <label for="password">Password <span class="req">*</span></label>
+      <input type="password" id="password" name="password" autocomplete="current-password" required>
+    </div>
+    <button type="submit" class="btn btn-primary btn-block" id="submit">Sign in</button>
+  </form>
+
+  <div class="login-hint">
+    <strong>Sample credentials</strong><br>
+    Username <code>admin</code> &middot; Password <code>admin123</code><br>
+    <span id="pw-warning">Change this password after signing in.</span>
+  </div>
+
+  <a class="login-back" href="/">&larr; Back to the public map</a>
+</main>
+
+<script src="/js/api.js"></script>
+<script src="/js/login.js"></script>
+</body>
+</html>

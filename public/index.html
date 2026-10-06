@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
+<title>Refuelio &mdash; Bangued&rsquo;s Gas Station Hub</title>
+<meta name="description" content="Interactive map of gasoline stations in Bangued, Abra, Philippines, with current fuel prices.">
+<link rel="stylesheet" href="/css/app.css">
+<link rel="stylesheet" href="/vendor/leaflet/leaflet.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><text y='19' font-size='19'>&#128673;</text></svg>">
+</head>
+<body>
+
+<header class="app-header">
+  <div class="app-title">
+    <span>&#128673; Refuelio</span>
+    <small>Bangued&rsquo;s Gas Station Hub</small>
+  </div>
+
+  <div class="header-tools">
+    <div class="search-wrap" id="search-wrap">
+      <span class="search-icon" aria-hidden="true">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round">
+          <circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path>
+        </svg>
+      </span>
+      <label class="visually-hidden" for="search" style="position:absolute;left:-9999px">Search stations</label>
+      <input id="search" type="search" autocomplete="off" placeholder="Search station&hellip;"
+             role="combobox" aria-expanded="false" aria-controls="search-results" aria-autocomplete="list">
+      <button class="search-clear" id="search-clear" type="button" aria-label="Clear search">&times;</button>
+      <div class="search-results" id="search-results" role="listbox"></div>
+    </div>
+  </div>
+
+  <!-- Signed-in chip, kept hidden until /api/me answers. A station_manager has
+       no dashboard to sign in to, so this map is where they work - this is how
+       they see which account they are on and get back out again. -->
+  <div class="header-auth" id="header-auth" hidden>
+    <span class="header-user" id="header-user"></span>
+    <button class="header-signout" id="sign-out" type="button">Sign out</button>
+  </div>
+</header>
+
+<main id="map" aria-label="Map of gasoline stations in Bangued, Abra"></main>
+
+<!-- Google-style map-type pill, anchored bottom-left like Google Maps. It maps
+     onto the API's own map types, so Google's built-in control is switched off
+     in map.js; CyclOSM is the exception and takes the free OpenStreetMap map
+     with it. The legend's default anchor stacks above this row. -->
+<div class="mapctl">
+  <div class="layer-switch" role="group" aria-label="Base map layer">
+    <button type="button" id="layer-street" aria-pressed="true">Default</button>
+    <button type="button" id="layer-satellite" aria-pressed="false">Satellite</button>
+    <button type="button" id="layer-hybrid" aria-pressed="false">Hybrid</button>
+    <button type="button" id="layer-cyclosm" aria-pressed="false">CyclOSM</button>
+  </div>
+</div>
+
+<!-- Dropdown anchor. The toggle and the panel share one fixed wrapper so the
+     panel can position itself with top:100%/right:0 and stay glued to the
+     button's own height and right edge at any zoom, header wrap or font size,
+     with no magic pixel offsets to keep in sync. -->
+<div class="list-ctl">
+  <button class="list-toggle" type="button" id="toggle-list"
+          aria-expanded="false" aria-controls="list-panel"
+          title="Show or hide the station list">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+      <path d="M4 6h16M4 12h16M4 18h16"></path>
+    </svg>
+    <span>Stations</span>
+  </button>
+
+  <aside class="list-panel" id="list-panel" aria-label="Gas station list">
+    <div class="list-head">
+      <span>Gas Stations</span>
+      <span class="list-count" id="list-count">0</span>
+    </div>
+    <div class="list-body" id="list-body"></div>
+  </aside>
+</div>
+
+<section class="legend" id="legend" aria-label="Map legend">
+  <div class="legend-head" id="legend-head">
+    <h2>Legend</h2>
+    <button class="legend-collapse" id="legend-collapse" type="button" aria-expanded="true" aria-controls="legend-body" aria-label="Collapse legend">&minus;</button>
+  </div>
+  <div class="legend-body" id="legend-body">
+    <div id="legend-brands"></div>
+    <div class="legend-actions">
+      <button type="button" id="legend-all">Show all</button>
+      <button type="button" id="legend-none">Hide all</button>
+    </div>
+    <p class="legend-note">
+      Untick a brand to hide its stations.
+      The dashed line is the Bangued municipal boundary.
+    </p>
+  </div>
+</section>
+
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+<div class="loader" id="loader">
+  <div class="loader-box">
+    <div class="spinner" role="presentation"></div>
+    <p id="loader-text">Loading gas stations&hellip;</p>
+  </div>
+</div>
+
+<script src="/vendor/leaflet/leaflet.js"></script>
+<script src="/js/gmaps-loader.js"></script>
+<script src="/js/icons.js"></script>
+<script src="/js/api.js"></script>
+<script src="/js/time.js"></script>
+<script src="/js/legend.js"></script>
+<script src="/js/map.js"></script>
+</body>
+</html>

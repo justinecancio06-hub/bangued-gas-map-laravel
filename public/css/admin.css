@@ -1,0 +1,674 @@
+:root {
+  --ink: #16202c;
+  --ink-2: #46586e;
+  --ink-3: #7b8ca1;
+  --line: #dde4ec;
+  --bg: #f4f6f9;
+  --panel: #fff;
+  --accent: #0f766e;
+  --accent-dark: #0b5952;
+  --danger: #c62828;
+  --danger-bg: #fdecea;
+  --ok: #2e7d32;
+  --warn: #b26a00;
+  --warn-bg: #fff6e5;
+  --radius: 12px;
+  --shadow: 0 6px 24px rgba(16, 32, 48, 0.14);
+  --shadow-sm: 0 1px 3px rgba(16, 32, 48, 0.1);
+  --topbar-h: 58px;
+  --font: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--ink);
+  font-size: 14px;
+  -webkit-text-size-adjust: 100%;
+}
+
+a { color: var(--accent); }
+
+button, input, select, textarea { font: inherit; }
+
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* ----------------------------------------------------------------- buttons */
+
+.btn {
+  border: 1px solid var(--line);
+  background: var(--panel);
+  color: var(--ink-2);
+  font-weight: 600;
+  font-size: 13px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  white-space: nowrap;
+}
+.btn:hover { background: #eef2f6; color: var(--ink); }
+.btn:disabled { opacity: 0.55; cursor: not-allowed; }
+.btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.btn-primary:hover { background: var(--accent-dark); border-color: var(--accent-dark); color: #fff; }
+.btn-danger { background: var(--danger); border-color: var(--danger); color: #fff; }
+.btn-danger:hover { background: #a51f1f; border-color: #a51f1f; color: #fff; }
+.btn-ghost-danger { color: var(--danger); }
+.btn-ghost-danger:hover { background: var(--danger-bg); color: var(--danger); }
+.btn-price { background: #e8f0fd; border-color: #c6d9f7; color: #16437e; }
+.btn-price:hover { background: #d6e4fa; border-color: #a8c8f0; color: #0d2f5e; }
+.btn-sm { padding: 5px 10px; font-size: 12px; border-radius: 6px; }
+.btn-block { width: 100%; justify-content: center; }
+
+.icon { width: 15px; height: 15px; flex: 0 0 auto; }
+
+/* ------------------------------------------------------------------- login */
+
+.login-page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: radial-gradient(1200px 600px at 50% -10%, #dbe9e7 0%, var(--bg) 60%);
+}
+
+.login-card {
+  width: 100%;
+  max-width: 400px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  padding: 30px 28px 26px;
+}
+.login-brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  margin-bottom: 5px;
+}
+.login-logo {
+  width: 42px;
+  height: 42px;
+  border-radius: 11px;
+  background: var(--accent);
+  display: grid;
+  place-items: center;
+  color: #fff;
+  flex: 0 0 auto;
+}
+.login-logo svg { width: 23px; height: 23px; }
+/* The wordmark and its subtitle stack, so the logo stays on the centre line of
+   the pair rather than of the h1 alone. */
+.login-brand-text { display: flex; flex-direction: column; }
+.login-card h1 { margin: 0; font-size: 19px; }
+.login-brand .brand-sub { margin: 1px 0 0; color: var(--ink-3); font-size: 11.5px; letter-spacing: .01em; }
+.login-card .sub { margin: 0 0 22px; color: var(--ink-3); font-size: 13px; }
+
+.login-hint {
+  margin-top: 18px;
+  padding: 10px 12px;
+  background: #f7f9fb;
+  border: 1px dashed var(--line);
+  border-radius: 8px;
+  font-size: 12px;
+  color: var(--ink-2);
+  line-height: 1.55;
+}
+.login-hint code {
+  background: #eaeff4;
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+.login-back { display: block; text-align: center; margin-top: 16px; font-size: 13px; }
+
+/* -------------------------------------------------------------------- forms */
+
+.field { margin-bottom: 14px; }
+.field label {
+  display: block;
+  font-size: 12.5px;
+  font-weight: 650;
+  color: var(--ink-2);
+  margin-bottom: 5px;
+}
+.field .hint { font-size: 11.5px; color: var(--ink-3); margin-top: 4px; line-height: 1.45; }
+.req { color: var(--danger); }
+
+input[type="text"], input[type="password"], input[type="number"],
+input[type="email"], input[type="search"], input[type="datetime-local"], select, textarea {
+  width: 100%;
+  padding: 9px 11px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fbfcfd;
+  color: var(--ink);
+  transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+}
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  background: #fff;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.13);
+}
+input[aria-invalid="true"] { border-color: var(--danger); }
+textarea { resize: vertical; min-height: 68px; }
+select { cursor: pointer; }
+/* type="search" renders a UA clear button that sits on top of the padding and
+   only appears in some engines, so it is hidden for a consistent control. */
+input[type="search"]::-webkit-search-cancel-button { -webkit-appearance: none; appearance: none; }
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 560px) { .grid-2 { grid-template-columns: 1fr; } }
+
+.checkline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--ink-2);
+  cursor: pointer;
+}
+.checkline input { width: 16px; height: 16px; accent-color: var(--accent); }
+
+/* ------------------------------------------------------------------ topbar */
+
+.topbar {
+  background: var(--panel);
+  border-bottom: 1px solid var(--line);
+  padding: 0 20px;
+  height: var(--topbar-h);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+.topbar .logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  font-size: 15px;
+}
+/* Wordmark + subtitle, stacked like the public map's header. */
+.topbar .logo .logo-text { display: flex; flex-direction: column; line-height: 1.25; }
+.topbar .logo .logo-text small { font-weight: 500; font-size: 10.5px; color: var(--ink-4); }
+.topbar .logo .sq {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: var(--accent);
+  color: #fff;
+  display: grid;
+  place-items: center;
+}
+.topbar .logo .sq svg { width: 17px; height: 17px; }
+.topbar .spacer { margin-left: auto; }
+.topbar .who { font-size: 12.5px; color: var(--ink-3); }
+.topbar .who strong { color: var(--ink-2); display: block; font-size: 13px; }
+/* The role under the name. Station managers reach this dashboard too, so the
+   badge is what tells the two apart; block keeps it on its own line. */
+.topbar .who small { display: block; font-size: 11px; color: var(--ink-4); }
+
+.page { padding: 22px 20px 60px; max-width: 1280px; margin: 0 auto; }
+
+.page-head {
+  display: flex;
+  align-items: flex-end;
+  gap: 14px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.page-head h1 { margin: 0 0 3px; font-size: 21px; }
+.page-head p { margin: 0; color: var(--ink-3); font-size: 13px; }
+
+/* ------------------------------------------------------------------- stats */
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(158px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.stat {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  box-shadow: var(--shadow-sm);
+}
+.stat .n { font-size: 25px; font-weight: 700; line-height: 1.15; font-variant-numeric: tabular-nums; }
+.stat .l { font-size: 12px; color: var(--ink-3); margin-top: 3px; }
+.stat.alert .n { color: var(--warn); }
+
+/* ------------------------------------------------------------------- table */
+
+.card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+.card-head {
+  padding: 13px 16px;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.card-head h2 { margin: 0; font-size: 15px; }
+.card-head .spacer { margin-left: auto; }
+
+/* ------------------------------------------------------------------ toolbar */
+
+.table-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 16px;
+  border-bottom: 1px solid var(--line);
+  background: #fbfcfd;
+  flex-wrap: wrap;
+}
+.table-toolbar .spacer { margin-left: auto; }
+
+/* The magnifier is positioned inside the box rather than placed before the
+   input, so the two cannot drift apart and the text still gets real left padding
+   to sit in. */
+.search-box { position: relative; flex: 1 1 220px; min-width: 0; max-width: 340px; }
+.search-box .search-icon {
+  position: absolute;
+  left: 11px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--ink-3);
+  pointer-events: none;
+}
+.search-box input { padding-left: 33px; }
+.search-box input::-webkit-search-cancel-button { -webkit-appearance: none; appearance: none; }
+
+.filter-select { width: auto; min-width: 140px; flex: 0 0 auto; }
+
+.result-count {
+  font-size: 12.5px;
+  color: var(--ink-3);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+@media (max-width: 720px) {
+  .table-toolbar { padding: 10px 12px; }
+  .search-box { flex: 1 1 100%; max-width: none; }
+  .filter-select { flex: 1 1 auto; }
+}
+
+/* Horizontal scrolling is only switched on below 900px, where the five columns
+   can genuinely overflow. `overflow-x: auto` forces overflow-y to compute to
+   `auto` as well, which would turn this into a scroll container and leave the
+   sticky thead below able to stick only inside a box that never scrolls
+   vertically - so above the breakpoint the wrapper stays inert. */
+@media (max-width: 900px) {
+  .table-scroll { overflow-x: auto; }
+}
+table.data { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+table.data th {
+  text-align: left;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink-3);
+  font-weight: 700;
+  padding: 11px 16px;
+  border-bottom: 1px solid var(--line);
+  background: #fbfcfd;
+  white-space: nowrap;
+  /* Pinned so the column labels stay put while a long list is scrolled. The
+     top offset clears the sticky topbar it would otherwise slide under. */
+  position: sticky;
+  top: var(--topbar-h);
+  z-index: 2;
+}
+table.data td { padding: 13px 16px; border-bottom: 1px solid #eef2f6; vertical-align: middle; }
+table.data tr:last-child td { border-bottom: 0; }
+table.data tbody tr { transition: background 0.12s; }
+table.data tbody tr:nth-child(even) { background: #fbfcfd; }
+table.data tbody tr:hover { background: #f0f7f6; }
+table.data tbody tr:hover .btn { border-color: #c3d3d1; }
+
+/* The Station cell: brand logo beside the name, with the brand and address
+   stacked underneath as supporting detail. */
+.cell-name { display: flex; gap: 11px; align-items: center; }
+.cell-name .body { min-width: 0; }
+.cell-name .dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  flex: 0 0 auto;
+}
+/* Brand logo in place of the colour dot above, which stays as its fallback. */
+.cell-name .brand-logo {
+  width: 26px;
+  height: 26px;
+  flex: 0 0 auto;
+  object-fit: contain;
+  background: #fff;
+  border: 1px solid #e3e8ef;
+  border-radius: 7px;
+  padding: 2px;
+  box-sizing: border-box;
+}
+/* MapIcons.brandLogo() swaps a missing or broken logo file for the brand's
+   coloured chip (MapIcons.legendMark). app.css styles .legend-mark for the
+   public map, but the dashboard only loads admin.css, so the chip needs these
+   rules here too - otherwise the fallback renders unstyled and the column goes
+   ragged again for exactly the brands whose logo fails to load. */
+.cell-name .legend-mark {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  color: #fff;
+}
+.cell-name .legend-mark svg { width: 15px; height: 15px; }
+.cell-name strong {
+  display: block;
+  font-size: 14px;
+  font-weight: 650;
+  line-height: 1.35;
+  /* Long station names wrap instead of stretching the column. */
+  overflow-wrap: anywhere;
+}
+.cell-name .sub {
+  display: block;
+  color: var(--ink-3);
+  font-size: 12px;
+  line-height: 1.4;
+  margin-top: 2px;
+  overflow-wrap: anywhere;
+}
+.cell-name .sub .sep { opacity: 0.55; margin: 0 5px; }
+.mono { font-family: ui-monospace, "Cascadia Mono", Consolas, monospace; font-size: 12px; color: var(--ink-2); }
+
+/* Price list. Each fuel line is a row so the amount is right-aligned and the
+   figures line up on their decimal points instead of drifting with the label. */
+.price-list { display: flex; flex-direction: column; gap: 3px; }
+.price-list .line { display: flex; align-items: baseline; gap: 10px; justify-content: space-between; }
+.price-list .fuel { color: var(--ink-2); font-size: 12.5px; white-space: nowrap; }
+.price-list .amount {
+  font-variant-numeric: tabular-nums;
+  font-weight: 650;
+  font-size: 13px;
+  white-space: nowrap;
+}
+.price-empty { color: var(--ink-3); }
+
+/* Status pills. admin.js emits .status with a status-success/-warning/-danger
+   modifier; before these rules existed the column rendered as bare text. */
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 4px 9px 4px 8px;
+  border-radius: 999px;
+  white-space: nowrap;
+  border: 1px solid transparent;
+}
+/* A dot rather than colour alone, so the state is still readable without it. */
+.status::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  flex: 0 0 auto;
+}
+.status-success { background: #e8f5e9; color: #1b5e20; border-color: #c5e1c6; }
+.status-warning { background: var(--warn-bg); color: #7a4a00; border-color: #f2ddb0; }
+.status-danger { background: var(--danger-bg); color: #8c1d18; border-color: #f5c6c2; }
+.status-neutral { background: #eceff4; color: var(--ink-2); border-color: #dde3ea; }
+
+.tag {
+  display: inline-block;
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 3px 7px;
+  border-radius: 5px;
+  white-space: nowrap;
+}
+.tag-live { background: #e8f5e9; color: var(--ok); }
+.tag-pending { background: var(--warn-bg); color: var(--warn); }
+.tag-off { background: #eceff4; color: var(--ink-3); }
+.tag-approx { background: #fff3e0; color: var(--warn); }
+.tag-confirmed { background: #e8f5e9; color: var(--ok); }
+
+.actions { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+/* Row actions are icon-only apart from Prices, so they are sized to a square to
+   keep the three of them visually even. */
+.actions .btn-icon { padding: 6px; }
+.actions .btn-icon .icon { width: 14px; height: 14px; }
+.actions .btn-edit { color: var(--ink-2); }
+.actions .btn-edit:hover { background: #e8f0fd; border-color: #c6d9f7; color: #16437e; }
+/* Delete is destructive but not urgent, so it stays outlined rather than filling
+   solid red across every row. */
+.actions .btn-danger { background: var(--panel); border-color: #f0c4c0; color: var(--danger); }
+.actions .btn-danger:hover { background: var(--danger-bg); border-color: #e8a9a3; color: #8c1d18; }
+
+/* A row for a station that is not on the public map is dimmed, so the list reads
+   at a glance without hiding anything. */
+tr.row-inactive .cell-name strong,
+tr.row-pending .cell-name strong { color: var(--ink-2); }
+
+.empty-state { padding: 44px 20px; text-align: center; color: var(--ink-3); }
+.empty-state h3 { margin: 0 0 6px; color: var(--ink-2); font-size: 15px; }
+.empty-state p { margin: 0 auto 16px; max-width: 420px; font-size: 13px; line-height: 1.6; }
+
+/* ------------------------------------------------------------------ modals */
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(18, 30, 44, 0.5);
+  z-index: 200;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 26px 16px;
+  overflow-y: auto;
+}
+.modal-backdrop[hidden] { display: none; }
+
+.modal {
+  background: var(--panel);
+  border-radius: 14px;
+  box-shadow: 0 22px 60px rgba(10, 20, 32, 0.32);
+  width: 100%;
+  max-width: 660px;
+  margin: auto;
+  overflow: hidden;
+}
+.modal.narrow { max-width: 420px; }
+.modal.wide { max-width: 880px; }
+
+.modal-head {
+  padding: 15px 18px;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.modal-head h2 { margin: 0; font-size: 16px; }
+.modal-head .x {
+  margin-left: auto;
+  border: 0;
+  background: transparent;
+  font-size: 22px;
+  line-height: 1;
+  color: var(--ink-3);
+  cursor: pointer;
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+.modal-head .x:hover { background: #eef1f5; color: var(--ink); }
+.modal-body { padding: 18px; max-height: min(66vh, 640px); overflow-y: auto; }
+.modal-foot {
+  padding: 13px 18px;
+  border-top: 1px solid var(--line);
+  display: flex;
+  gap: 9px;
+  justify-content: flex-end;
+  background: #fbfcfd;
+  flex-wrap: wrap;
+}
+.modal-foot .left { margin-right: auto; }
+
+fieldset {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 14px 15px 4px;
+  margin: 0 0 16px;
+}
+legend { font-size: 12px; font-weight: 700; color: var(--ink-2); padding: 0 6px; text-transform: uppercase; letter-spacing: 0.04em; }
+
+/* --------------------------------------------------------- coordinate picker */
+
+.picker { margin-bottom: 14px; }
+.picker-map {
+  height: 250px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  overflow: hidden;
+  background: #e6ebf1;
+}
+/* Stands in for the map when the Maps JavaScript API cannot be loaded at all -
+   a missing key, or a CSP that blocks maps.googleapis.com. The lat/lng fields
+   below are independent, so the station is still editable. */
+.picker-map.picker-error {
+  display: grid;
+  place-items: center;
+  padding: 18px 20px;
+  font-size: 12.5px;
+  line-height: 1.5;
+  text-align: center;
+  color: #8c1d18;
+  background: #fdf3f2;
+}
+.picker-help { font-size: 11.5px; color: var(--ink-3); margin: 6px 0 0; line-height: 1.45; }
+
+/* ------------------------------------------------------------------ prices */
+
+.price-rows { display: flex; flex-direction: column; gap: 9px; }
+.price-row { display: grid; grid-template-columns: 1fr 150px auto; gap: 9px; align-items: center; }
+.price-row input { text-align: right; font-variant-numeric: tabular-nums; }
+.price-row .cur { position: relative; }
+.price-row .cur::before {
+  content: "₱";
+  position: absolute;
+  left: 11px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--ink-3);
+  pointer-events: none;
+}
+.price-row .cur input { padding-left: 26px; }
+@media (max-width: 560px) {
+  .price-row { grid-template-columns: 1fr 1fr; }
+  .price-row .rm { grid-column: 1 / -1; }
+}
+
+.hist { font-size: 12.5px; }
+.hist td { padding: 7px 0; }
+.hist .up { color: var(--danger); font-weight: 600; }
+.hist .down { color: var(--ok); font-weight: 600; }
+
+/* --------------------------------------------------------------- messages */
+
+.alert {
+  border-radius: 9px;
+  padding: 10px 13px;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 14px;
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  line-height: 1.5;
+}
+.alert-error { background: var(--danger-bg); color: #8c1d18; border: 1px solid #f5c6c2; }
+.alert-ok { background: #e8f5e9; color: #1b5e20; border: 1px solid #c5e1c6; }
+.alert-info { background: #e8f0fd; color: #16437e; border: 1px solid #c6d9f7; }
+.alert-warn { background: var(--warn-bg); color: #7a4a00; border: 1px solid #f2ddb0; }
+.alert[hidden] { display: none; }
+
+.toast {
+  position: fixed;
+  bottom: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 300;
+  background: #16202c;
+  color: #fff;
+  padding: 11px 18px;
+  border-radius: 9px;
+  box-shadow: var(--shadow);
+  font-size: 13.5px;
+  font-weight: 600;
+  max-width: min(480px, calc(100vw - 24px));
+}
+.toast[hidden] { display: none; }
+
+.loading-row { padding: 40px; text-align: center; color: var(--ink-3); font-size: 13px; }
+
+/* loadData()'s failure row. Without this it inherited the table's cell styling
+   and read as an ordinary, empty data row rather than an error. */
+.error-row { padding: 40px; text-align: center; color: #8c1d18; font-size: 13px; }
+
+/* The price-history panel's "Loading…", "none yet" and "failed" notices.
+   .empty-note lives in app.css, which admin.html does not load, so these three
+   placeholders were rendering as unstyled text. */
+.empty-note { padding: 18px 4px; text-align: center; color: var(--ink-3); font-size: 12.5px; }
+
+.only-mobile { display: none; }
+@media (max-width: 720px) {
+  .page { padding: 16px 12px 60px; }
+  .topbar { padding: 0 12px; gap: 8px; }
+  .topbar .who { display: none; }
+  .hide-sm { display: none !important; }
+  .only-mobile { display: inline-flex; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}

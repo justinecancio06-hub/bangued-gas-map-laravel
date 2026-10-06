@@ -1,0 +1,1227 @@
+:root {
+  --brand-shell: #fdda00;
+  --brand-caltex: #005eb8;
+  --blu: #1e88e5;
+  --petron: #004e9c;
+
+  --ink: #16202c;
+  --ink-2: #46586e;
+  --ink-3: #7b8ca1;
+  --line: #dde4ec;
+  --bg: #f4f6f9;
+  --panel: #ffffff;
+  --accent: #0f766e;
+  --danger: #c62828;
+  --warn: #b26a00;
+  --ok: #2e7d32;
+
+  --shadow: 0 6px 24px rgba(16, 32, 48, 0.14);
+  --shadow-sm: 0 2px 10px rgba(16, 32, 48, 0.1);
+  --radius: 12px;
+  --header-h: 56px;
+  /* Google-style map-type pill, anchored bottom-left. These three drive the
+     legend's default anchor (legend.js sums them) and the list panel's cap,
+     so the bottom-left stack never self-overlaps. --mapctl-h must match the
+     pill's fixed height below. */
+  --mapctl-inset: 16px;
+  --mapctl-h: 30px;
+  --legend-gap: 10px;
+  /* The legend owns the bottom-left corner above the map-type pill. The list
+     panel is capped short enough to stop above the whole stack, so the panel,
+     the pill and the legend are always visible at the same time. */
+  --legend-reserve: 330px;
+  --pop-w: 282px;
+  --font: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: var(--font);
+  color: var(--ink);
+  background: var(--bg);
+  -webkit-text-size-adjust: 100%;
+}
+
+/* ---------- App shell ---------- */
+
+.app-header {
+  position: fixed;
+  inset: 0 0 auto 0;
+  height: var(--header-h);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 14px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--line);
+  box-shadow: var(--shadow-sm);
+}
+
+.app-title {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.app-title small {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink-3);
+}
+
+#map {
+  position: absolute;
+  inset: var(--header-h) 0 0 0;
+  z-index: 1;
+  background: #dfe5ec;
+}
+
+/* ---------- Header controls ---------- */
+
+/* Centred in the header. Positioned rather than spaced with auto margins: the
+   title is a different width than the space on the right, so flex auto-margins
+   would only look centred on one particular screen width. The header is
+   position:fixed, so it is already the containing block. The title keeps its
+   own space and the search is centred over the viewport, as in Google Maps. */
+.header-tools {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  /* The title is absolutely free to scroll under the results dropdown, which
+     sits above it (z-index 1100), rather than reserving a column that would
+     pull the centred search off-axis. */
+  z-index: 1;
+}
+
+/* The signed-in chip. In flow after the absolutely positioned tools above, so
+   margin-left:auto parks it against the header's right edge without nudging
+   the centred search. Hidden entirely until /api/me says somebody is in. */
+.header-auth {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  z-index: 2;
+}
+.header-auth[hidden] { display: none; }
+.header-user {
+  font-size: 12.5px;
+  font-weight: 650;
+  color: var(--ink-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 150px;
+}
+.header-signout {
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 650;
+  padding: 6px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--panel);
+  color: var(--ink-2);
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s;
+}
+.header-signout:hover { background: var(--bg); border-color: #c9d4e0; }
+.header-signout:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* ---------- Bottom-left map controls ---------- */
+
+/* The map-type pill. Google has no separate "labels over imagery" layer - its
+   hybrid map type already labels itself - so this is a straight switch between
+   the API's map types. overflow:hidden on the pill clips the active segment's
+   fill to the container radius, which is how Google avoids a rounded active
+   pill. */
+.mapctl {
+  position: absolute;
+  left: var(--mapctl-inset);
+  bottom: var(--mapctl-inset);
+  z-index: 850;
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+}
+
+.layer-switch {
+  display: flex;
+  height: var(--mapctl-h);
+  background: #fff;
+  /* Google uses a small radius and a soft drop shadow rather than a border. */
+  border-radius: 2px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+}
+.layer-switch button {
+  border: 0;
+  background: transparent;
+  font-family: Roboto, Arial, var(--font);
+  font-size: 11.5px;
+  font-weight: 500;
+  color: #5f6368;
+  padding: 0 10px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.1s, color 0.1s;
+}
+/* Thin divider between the segments, as in Google's control. */
+.layer-switch button + button { border-left: 1px solid #dadce0; }
+.layer-switch button:hover { background: #f1f3f4; }
+.layer-switch button[aria-pressed="true"] {
+  background: #e8eaed;
+  color: #202124;
+  font-weight: 700;
+}
+
+.layer-switch button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+/* ---------- Search ---------- */
+
+.search-wrap {
+  position: relative;
+  flex: 1 1 auto;
+  max-width: 340px;
+}
+
+#search {
+  width: 100%;
+  font: inherit;
+  font-size: 14px;
+  padding: 9px 34px 9px 34px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: #f7f9fb;
+  color: var(--ink);
+}
+#search::placeholder { color: var(--ink-3); }
+#search:focus {
+  outline: none;
+  background: #fff;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.12);
+}
+
+.search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--ink-3);
+  pointer-events: none;
+  display: flex;
+}
+.search-clear {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 0;
+  background: transparent;
+  color: var(--ink-3);
+  cursor: pointer;
+  font-size: 17px;
+  line-height: 1;
+  padding: 4px 6px;
+  border-radius: 50%;
+  display: none;
+}
+.search-clear:hover { background: #e7ecf2; color: var(--ink); }
+.search-wrap.has-value .search-clear { display: block; }
+
+.search-results {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  max-height: 320px;
+  overflow-y: auto;
+  padding: 4px;
+  display: none;
+  z-index: 1100;
+}
+.search-results.open { display: block; }
+.search-results button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  text-align: left;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  padding: 9px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.search-results button:hover,
+.search-results button:focus-visible {
+  background: #eef4f4;
+  outline: none;
+}
+.search-results .empty {
+  padding: 12px;
+  color: var(--ink-3);
+  font-size: 13px;
+  text-align: center;
+}
+.sr-dot { width: 10px; height: 10px; border-radius: 50%; flex: 0 0 auto; }
+.sr-name { font-size: 14px; font-weight: 600; }
+.sr-sub { font-size: 12px; color: var(--ink-3); }
+
+/* ---------- Station list panel (dropdown under the "Stations" toggle) ---------- */
+
+/* Single fixed wrapper holding both the toggle and the panel. Because the
+   panel is positioned against this box, it stays exactly under the button and
+   flush with its right edge whatever the header height or button size is. */
+.list-ctl {
+  position: fixed;
+  top: calc(var(--header-h) + 12px);
+  right: 12px;
+  z-index: 880;
+  /* The wrapper shrink-wraps the toggle; the panel is out of flow and so does
+     not stretch it. */
+  width: max-content;
+}
+
+.list-panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 1;
+  width: 340px;
+  max-width: calc(100vw - 24px);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  /* The viewport term keeps the whole panel on screen when the header is
+     tall; --legend-reserve is no longer subtracted because the panel no
+     longer shares a column with the bottom-left legend. */
+  max-height: min(70vh, calc(100vh - var(--header-h) - 64px));
+
+  /* Closed by default: nudged up and slightly scaled under the button, so it
+     reads as a menu folding away rather than sliding in from the map edge.
+     visibility is delayed on the way out so the animation is actually seen,
+     and flipped instantly on the way in. */
+  transform: translateY(-8px) scale(0.98);
+  transform-origin: top right;
+  opacity: 0;
+  visibility: hidden;
+  transition: transform 0.18s ease, opacity 0.18s ease, visibility 0s linear 0.18s;
+}
+.list-panel.open {
+  transform: none;
+  opacity: 1;
+  visibility: visible;
+  transition: transform 0.18s ease, opacity 0.18s ease, visibility 0s;
+}
+
+/* Floating show/hide control, top-right. It sits above the map and above the
+   panel, so it is always clickable again to close it. */
+.list-toggle {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  color: var(--ink-2);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: 999px;
+  box-shadow: var(--shadow);
+  cursor: pointer;
+}
+.list-toggle:hover { border-color: #b9c6d4; color: var(--ink); }
+.list-toggle[aria-expanded="true"] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+.list-toggle:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.list-toggle svg { width: 15px; height: 15px; flex: 0 0 auto; }
+
+.list-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 13px;
+  border-bottom: 1px solid var(--line);
+  font-size: 13px;
+  font-weight: 700;
+}
+.list-count {
+  margin-left: auto;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ink-3);
+  background: #eef1f5;
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+.list-body { overflow-y: auto; }
+
+.station-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  width: 100%;
+  text-align: left;
+  border: 0;
+  border-bottom: 1px solid #f0f3f7;
+  background: transparent;
+  font: inherit;
+  padding: 11px 13px;
+  cursor: pointer;
+}
+/* The [hidden] attribute only works via the UA stylesheet's [hidden] rule, and
+   any author-origin `display` on the same element beats it. .station-row sets
+   display:flex above, so without this the legend could untick a brand and drop
+   its pins while every row stayed listed. Same guard as .loader[hidden],
+   .map-notice[hidden] and .toast[hidden] further down. */
+.station-row[hidden] { display: none; }
+.station-row:hover, .station-row:focus-visible { background: #f5f9f9; outline: none; }
+.station-row.active { background: #e9f3f2; box-shadow: inset 3px 0 0 var(--accent); }
+/* Brand logo in place of the old colour dot. */
+.station-row .brand-logo {
+  width: 26px;
+  height: 26px;
+  flex: 0 0 auto;
+  object-fit: contain;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  padding: 2px;
+  box-sizing: border-box;
+}
+.st-name { font-size: 14px; font-weight: 650; line-height: 1.3; }
+.st-addr { font-size: 12px; color: var(--ink-3); margin-top: 2px; }
+.st-badge {
+  display: inline-block;
+  margin-top: 5px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: #fff3e0;
+  color: var(--warn);
+}
+.st-price {
+  font-size: 12px;
+  color: var(--ink-2);
+  margin-top: 4px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Legend (fixed bottom-left, not draggable) ---------- */
+
+.legend {
+  position: absolute;
+  /* Fixed anchor: bottom-left, stacked above the map-type pill so the two
+     bottom-left controls never overlap. The legend is not draggable, so CSS
+     owns the position outright - no JS writes left/top/right/bottom inline. */
+  left: var(--mapctl-inset);
+  bottom: calc(var(--mapctl-inset) + var(--mapctl-h) + var(--legend-gap));
+  top: auto;
+  right: auto;
+  z-index: 850;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  width: 246px;
+  max-width: calc(100vw - 24px);
+  /* Column layout so the head can stay put while the body scrolls. */
+  display: flex;
+  flex-direction: column;
+  /* Hard ceiling so the box can never outgrow the viewport. Deliberately
+     measured from the header rather than plain 100vh: the header overlays the
+     top of the map, so 100vh - 32px would still let the tail slip under it,
+     and legend.js clamps the top edge to below the header. */
+  max-height: calc(100vh - var(--header-h) - 24px);
+}
+.legend-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--line);
+  /* Default cursor, not grab: the box no longer moves. */
+  cursor: default;
+  background: #fbfcfd;
+  border-radius: var(--radius) var(--radius) 0 0;
+  /* Keep the header from being squashed away while the body scrolls. */
+  flex: 0 0 auto;
+}
+.legend-head h2 { margin: 0; font-size: 13px; font-weight: 700; flex: 1; }
+.legend-collapse {
+  border: 0;
+  background: transparent;
+  color: var(--ink-3);
+  cursor: pointer;
+  font-size: 15px;
+  line-height: 1;
+  padding: 3px 6px;
+  border-radius: 5px;
+}
+.legend-collapse:hover { background: #eceff4; color: var(--ink); }
+/* min-height:0 is the load-bearing part - without it a flex item refuses to
+   shrink below its content, overflow-y:auto never engages and the rows spill
+   past the legend's max-height instead of scrolling. */
+.legend-body {
+  padding: 8px 10px 11px;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: #c3ccd8 transparent;
+}
+.legend-body::-webkit-scrollbar { width: 9px; }
+.legend-body::-webkit-scrollbar-track { background: transparent; }
+.legend-body::-webkit-scrollbar-thumb {
+  background: #c3ccd8;
+  border: 2px solid var(--panel);
+  border-radius: 5px;
+}
+.legend-body::-webkit-scrollbar-thumb:hover { background: #a9b6c6; }
+
+.legend.collapsed .legend-body { display: none; }
+.legend.collapsed .legend-head { border-bottom: 0; border-radius: var(--radius); }
+
+.legend-row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 6px 4px;
+  border-radius: 7px;
+  cursor: pointer;
+  font-size: 13px;
+}
+.legend-row:hover { background: #f4f7f9; }
+.legend-row input { margin: 0; accent-color: var(--accent); width: 15px; height: 15px; flex: 0 0 auto; }
+.legend-row.off { opacity: 0.45; }
+.legend-mark {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  color: #fff;
+}
+.legend-mark svg { width: 14px; height: 14px; }
+/* Brand logo files vary a lot in aspect ratio, so contain them on a white
+   rounded square rather than letting them distort or bleed onto the row. */
+.legend-row .brand-logo {
+  width: 24px;
+  height: 24px;
+  flex: 0 0 auto;
+  object-fit: contain;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 2px;
+  box-sizing: border-box;
+}
+.legend-count { margin-left: auto; font-size: 11px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+
+.legend-note {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--line);
+  font-size: 11px;
+  color: var(--ink-3);
+  line-height: 1.45;
+}
+.legend-actions { display: flex; gap: 6px; margin-top: 8px; }
+.legend-actions button {
+  flex: 1;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  border: 1px solid var(--line);
+  background: #fbfcfd;
+  color: var(--ink-2);
+  border-radius: 6px;
+  padding: 5px 6px;
+  cursor: pointer;
+}
+.legend-actions button:hover { background: #eef2f6; color: var(--ink); }
+
+/* ---------- Markers ---------- */
+
+/* Google path: nothing to style. The station pins are rasterised onto a canvas
+   in icons.js and handed to the API as google.maps.Icon images, because a
+   Google marker is a URL rather than markup.
+
+   Leaflet fallback path: the same pin is inline SVG inside a divIcon, so the
+   only thing to neutralise is Leaflet's default grey box around divIcon
+   content - the class name replaces leaflet-div-icon, but the properties are
+   restated so a Leaflet CSS update cannot reintroduce the frame. */
+.station-pin {
+  background: none;
+  border: 0;
+  transition: transform 0.16s ease;
+  transform-origin: 50% 100%;
+}
+
+/* The clicked pin. Its SVG already gets a darker, heavier outline when selected,
+   but two pins of the same size next to each other still read as equal, so the
+   selected one also rises above them. */
+.station-pin.is-selected {
+  transform: scale(1.12) translateY(-2px);
+  z-index: 620;
+}
+
+/* ---------- Station card: bottom sheet on phones ---------- */
+
+@media (max-width: 640px) {
+  /*
+   * Leaflet positions the popup with an inline transform, so a sheet has to take
+   * the element out of that flow entirely: position:fixed plus reset left/top
+   * and no transform. The tip is dropped and the wrapper's own rounding and
+   * shadow are removed, because the sheet supplies its own.
+   */
+  .station-sheet.leaflet-popup {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: auto;
+    width: auto;
+    max-width: none !important;
+    min-width: 0 !important;
+    transform: none;
+    margin: 0;
+    z-index: 1000;
+  }
+  .station-sheet .leaflet-popup-content-wrapper {
+    border-radius: 16px 16px 0 0;
+    box-shadow: 0 -6px 28px rgba(15, 38, 45, 0.28);
+    overflow: hidden;
+  }
+  .station-sheet .leaflet-popup-content {
+    margin: 0;
+    width: auto !important;
+    /* The card scrolls inside itself rather than growing off the screen: a long
+       note plus five price chips is taller than a phone. */
+    max-height: 68vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .station-sheet .leaflet-popup-tip { display: none; }
+
+  .pop-grip {
+    display: block;
+    width: 38px;
+    height: 4px;
+    margin: 8px auto 0;
+    border-radius: 999px;
+    background: #cfd8db;
+  }
+
+  /* Full-bleed action buttons are far easier to hit with a thumb. */
+  .pop-act { padding: 12px 10px; font-size: 14px; }
+  .pop-chip-price { font-size: 18px; }
+
+  /* The bottom control row is covered by the sheet, so it steps aside while the
+     card is open. The legend sits at the top and stays usable. */
+  body.sheet-open .mapctl,
+  body.sheet-open .list-ctl {
+    opacity: 0;
+    pointer-events: none;
+  }
+  .mapctl, .list-ctl { transition: opacity 0.18s ease; }
+}
+
+/* ---------- InfoWindow ---------- */
+
+/* Google ships .gm-style-iw with its own padding, max-width and close button.
+   The popup content is set as a DOM node, so everything below styles the same
+   markup it always did - only the wrapper around it has to be flattened. */
+.gm-style .gm-style-iw-c {
+  padding: 0 !important;
+}
+.gm-style .gm-style-iw {
+  width: var(--pop-w) !important;
+  max-width: var(--pop-w) !important;
+  padding: 0 !important;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+/* Google's own close button sits on the brand-coloured header and cannot be
+   recoloured reliably, so it is replaced by .pop-close inside the popup. */
+.gm-style .gm-style-iw-chr { display: none !important; }
+/* Leaflet's is disabled at the bindPopup() call, and hidden here as well so a
+   popup that is ever opened without that option still shows one X, not two. */
+.leaflet-popup-close-button { display: none !important; }
+.gm-style .gm-style-iw-d {
+  max-height: 320px;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: auto !important;
+}
+
+/* Our close button, drawn on the gradient header. */
+.pop-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 26px;
+  height: 26px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+  font-family: var(--font);
+  font-size: 19px;
+  line-height: 1;
+  padding: 0 0 2px;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+.pop-close:hover { background: rgba(255, 255, 255, 0.34); }
+.pop-close:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 1px;
+}
+
+.pop {
+  overflow: hidden;
+  border-radius: var(--radius);
+  line-height: 1.45;
+}
+.pop-head {
+  position: relative;
+  padding: 12px 40px 12px 14px;
+  color: #fff;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.pop-head .pop-mark {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.22);
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+}
+/* The logo keeps its own white disc so it stays legible on top of the
+   brand-coloured header gradient, whatever the artwork's background. */
+.pop-mark .brand-logo {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #fff;
+  object-fit: contain;
+  padding: 3px;
+  box-sizing: border-box;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+.pop-mark svg { width: 17px; height: 17px; }
+.pop-name {
+  display: block;
+  font-size: 15.5px;
+  font-weight: 700;
+  line-height: 1.28;
+  letter-spacing: -0.01em;
+}
+
+/* Brand chip, shown in the popup body only when the station name does not
+   already spell out the brand. */
+.pop-brand-chip {
+  display: inline-block;
+  font-size: 10.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 3px 9px;
+  margin-bottom: 10px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  color: #fff;
+}
+
+.pop-body { padding: 12px 14px 13px; }
+
+/* ---- prices, the reason anyone opened the card ---- */
+.pop-prices {
+  margin: 0 0 11px;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 11px;
+}
+.pop-prices h4 {
+  margin: 0;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink-3);
+}
+.pop-prices-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+/* A chip per fuel type. Two columns on a 300px card, three when there is room,
+   so the price is the largest text in the card rather than a table cell. */
+.pop-chip-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(92px, 1fr));
+  gap: 6px;
+}
+.pop-chip {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 7px 9px;
+  border-radius: 8px;
+  background: #f2f7f6;
+  border: 1px solid #e2ecea;
+}
+.pop-chip-type {
+  font-size: 10.5px;
+  font-weight: 650;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ink-3);
+}
+.pop-chip-price {
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+
+/* How much the number is worth. The dot is decorative; the wording carries the
+   meaning, so colour is never the only signal. */
+.pop-fresh {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 650;
+  padding: 2px 8px 2px 6px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.pop-fresh-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  flex: 0 0 auto;
+}
+.pop-fresh.is-fresh { background: #e6f6ec; color: #1c7a45; }
+.pop-fresh.is-recent { background: #fff6e2; color: #8a6100; }
+.pop-fresh.is-stale { background: #f0f1f3; color: #5c6470; }
+.pop-fresh.is-unknown { background: #f0f1f3; color: #5c6470; }
+
+.pop-updated { font-size: 11px; color: var(--ink-3); margin: 8px 0 0; }
+.price-empty { font-size: 13px; color: var(--ink-3); font-style: italic; margin: 6px 0 0; }
+
+.pop-row { display: flex; gap: 8px; font-size: 13px; margin-bottom: 7px; align-items: flex-start; }
+.pop-row svg { width: 15px; height: 15px; flex: 0 0 auto; margin-top: 1px; color: var(--ink-3); }
+.pop-row span { color: var(--ink-2); }
+.pop-row a { color: var(--accent); }
+
+/* ---- action bar ---- */
+.pop-actions {
+  display: flex;
+  gap: 7px;
+  margin: 12px 0 0;
+}
+.pop-act {
+  flex: 1 1 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px 10px;
+  border-radius: 9px;
+  border: 1px solid #d8e2e6;
+  background: #fff;
+  color: var(--ink-2);
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 650;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s, color 0.12s;
+}
+.pop-act svg { width: 15px; height: 15px; flex: 0 0 auto; }
+.pop-act:hover { background: #f5f9f9; border-color: #c3d2d8; color: var(--ink); }
+.pop-act:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.pop-act-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  /*
+   * !important on the colour only. This markup is injected into two different
+   * map libraries' own popup scopes - Google's .gm-style and Leaflet's
+   * .leaflet-popup - and both ship their own `a` rules that outrank a plain
+   * class selector here, which is what left the Directions label rendering
+   * dark on the brand-coloured button. Background and border are left alone so
+   * the hover state below still works normally.
+   */
+  color: #fff !important;
+}
+/* The icon inherits via currentColor, so it needs the same guarantee. */
+.pop-act-primary svg { stroke: #fff; }
+.pop-act-primary:hover { background: #0e7c71; border-color: #0e7c71; color: #fff !important; }
+
+/* The one button that is not for visitors: it swaps the price block below it
+   for the editor. Tinted so it reads as "this card is yours" rather than as
+   another Directions/Call link. */
+.pop-act-edit {
+  color: var(--accent);
+  border-color: #cfe3e1;
+  background: #f2f7f6;
+}
+.pop-act-edit:hover { background: #e6f1ef; border-color: #b7d3cf; color: var(--accent); }
+
+/* ---- inline price editor: the station_manager's own station, in the popup ---- */
+
+/* Stands exactly where .pop-prices stood, so opening the editor never reflows
+   the address rows and the action bar under it. */
+.pop-edit {
+  display: block;
+  margin: 0 0 11px;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 11px;
+}
+.pop-edit-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.pop-edit-head h4 {
+  margin: 0;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink-3);
+}
+.pop-edit-note { font-size: 10.5px; color: var(--ink-3); }
+.pop-edit-rows { display: flex; flex-direction: column; gap: 6px; }
+.pop-edit-row {
+  display: grid;
+  grid-template-columns: 1fr 80px 24px;
+  gap: 6px;
+  align-items: center;
+}
+.pop-edit-type,
+.pop-edit-price {
+  font: inherit;
+  font-size: 13px;
+  padding: 7px 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--ink);
+  min-width: 0;
+}
+.pop-edit-price {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.pop-edit-type:focus-visible,
+.pop-edit-price:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+  border-color: var(--accent);
+}
+.pop-edit-drop {
+  width: 24px;
+  height: 24px;
+  border: 0;
+  border-radius: 50%;
+  background: #f0f1f3;
+  color: var(--ink-3);
+  font-size: 15px;
+  line-height: 1;
+  cursor: pointer;
+}
+.pop-edit-drop:hover { background: #e5e8ec; color: var(--danger); }
+.pop-edit-drop:focus-visible { outline: 2px solid var(--danger); outline-offset: 1px; }
+.pop-edit-error {
+  margin: 8px 0 0;
+  font-size: 12px;
+  font-weight: 650;
+  color: var(--danger);
+}
+.pop-edit-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 7px;
+  margin-top: 10px;
+}
+.pop-edit-spacer { flex: 1 1 auto; }
+.pop-edit-add,
+.pop-edit-cancel,
+.pop-edit-save {
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 650;
+  padding: 7px 10px;
+  border-radius: 8px;
+  border: 1px solid #d8e2e6;
+  background: #fff;
+  color: var(--ink-2);
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s, color 0.12s;
+}
+.pop-edit-add:hover,
+.pop-edit-cancel:hover { background: #f5f9f9; border-color: #c3d2d8; color: var(--ink); }
+/* !important on the colour only: this form is injected into Google's and
+   Leaflet's popup scopes, whose own control rules outrank a class selector -
+   the same trap the Directions button above was fixed for. */
+.pop-edit-save {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff !important;
+}
+.pop-edit-save:hover { background: #0e7c71; border-color: #0e7c71; }
+.pop-edit-save:disabled { opacity: 0.6; cursor: default; }
+.pop-edit-add:focus-visible,
+.pop-edit-cancel:focus-visible,
+.pop-edit-save:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+/* Only rendered as a bottom sheet; a hide-by-default keeps the desktop card
+   from carrying an orphan pill. */
+.pop-grip { display: none; }
+.pop-note {
+  margin-top: 10px;
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: #7a5300;
+  background: #fff8e8;
+  border-left: 3px solid #f0a500;
+  padding: 7px 9px;
+  border-radius: 0 6px 6px 0;
+}
+.pop-flag {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: #fff3e0;
+  color: var(--warn);
+  border-radius: 4px;
+  padding: 2px 6px;
+  margin-top: 7px;
+}
+
+/* ---------- Loading ---------- */
+
+.loader {
+  position: absolute;
+  inset: 0;
+  z-index: 900;
+  display: grid;
+  place-items: center;
+  background: rgba(244, 246, 249, 0.82);
+  backdrop-filter: blur(2px);
+  transition: opacity 0.3s;
+}
+.loader[hidden] { display: none; }
+.loader.fade { opacity: 0; pointer-events: none; }
+
+/* Notice shown when Google Maps refuses to authenticate (bad key, billing off,
+   exhausted quota, referrer restriction).
+
+   It covers the map only and never the whole viewport, unlike .loader: a key
+   failure does not affect the station data, so the list and legend stay on
+   screen and usable - which is the point, since searching for a price is still
+   worth doing when the basemap will not draw. z-index sits above the map's own
+   1 but below .mapctl and .legend (850) and .list-panel (880). */
+.map-notice {
+  position: absolute;
+  inset: var(--header-h) 0 0 0;
+  z-index: 840;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  pointer-events: none;
+}
+.map-notice[hidden] { display: none; }
+.map-notice-card {
+  pointer-events: auto;
+  max-width: 470px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--warn);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 16px 18px;
+}
+.map-notice-card h2 { margin: 0 0 6px; font-size: 15px; }
+.map-notice-card p { margin: 0 0 9px; font-size: 13px; line-height: 1.55; color: var(--ink-2); }
+.map-notice-card p:last-child { margin-bottom: 0; }
+.map-notice-card code {
+  font-size: 12.5px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 1px 5px;
+}
+.loader-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 22px 30px;
+}
+.spinner {
+  width: 30px;
+  height: 30px;
+  border: 3px solid #dbe4ec;
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loader-box p { margin: 0; font-size: 13px; color: var(--ink-2); font-weight: 600; }
+
+/* ---------- Toast / error ---------- */
+
+.toast {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1200;
+  background: #2a1a1a;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 10px 16px;
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  max-width: min(460px, calc(100vw - 28px));
+  text-align: center;
+}
+.toast[hidden] { display: none; }
+
+.empty-note {
+  padding: 22px 16px;
+  text-align: center;
+  color: var(--ink-3);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+/* Google's own attribution line is required by the Maps API terms. It sits
+   bottom-right by default, which is free here, so only its font size is
+   brought in line with the rest of the app. */
+.gm-style .gm-style-attribute {
+  font-family: var(--font);
+  font-size: 10px;
+  background: rgba(255, 255, 255, 0.82) !important;
+}
+.gm-style .gm-style-attribute a { color: var(--ink-2); }
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 860px) {
+  :root { --header-h: 96px; }
+  .app-header {
+    height: var(--header-h);
+    flex-wrap: wrap;
+    align-content: center;
+    padding: 6px 10px;
+    gap: 6px;
+  }
+  .app-title { width: 100%; font-size: 15px; }
+  /* Back into normal flow here. A centred search only reads as deliberate
+     while the header is one tall row; once it wraps to two, centring it would
+     collide with the title, so the search takes the full second row instead. */
+  .header-tools {
+    position: static;
+    transform: none;
+    width: 100%;
+    flex-wrap: wrap;
+  }
+  .search-wrap { max-width: none; flex: 1 1 140px; }
+  /* Full-width minus margins, still hanging off the toggle's right edge. The
+     width is measured from the viewport, not the shrink-wrapped wrapper, so a
+     narrow toggle button cannot clip the panel. */
+  .list-panel {
+    width: calc(100vw - 16px);
+    max-width: calc(100vw - 16px);
+    max-height: min(60vh, calc(100vh - var(--header-h) - 60px));
+  }
+  /* Keep the legend bottom-left above the map-type pill, just narrower so it
+     covers less of the map. --mapctl-inset moves both the pill and the
+     legend's default anchor in step. */
+  :root { --mapctl-inset: 12px; --legend-reserve: 275px; }
+  .legend {
+    width: 200px;
+  }
+  .legend-body { padding: 6px 8px 9px; }
+  .legend-row { font-size: 12.5px; padding: 5px 3px; }
+  /* The floating toggle must stay visible here: with the panel closed by
+     default it is the only way to open the list on a small screen. */
+  .list-ctl { top: calc(var(--header-h) + 8px); right: 8px; }
+  .list-panel { top: calc(100% + 6px); }
+  .list-toggle { padding: 7px 12px; }
+}
+
+@media (max-width: 520px) {
+  .legend { width: 168px; }
+  .legend-head { padding: 8px 10px; }
+  .legend-head h2 { font-size: 12px; }
+  .legend-note { display: none; }
+  /* The InfoWindow is pinned to a fixed width, so it has to narrow with the
+     viewport or it overhangs on a phone. */
+  :root { --pop-w: 232px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
